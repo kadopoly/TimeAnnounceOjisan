@@ -36,7 +36,7 @@ engine=festival # which speech engine you use     ( festival / google )
 pid=$( pgrep -u ${uname} gnome-session )
 dbus=$( grep -z DBUS_SESSION_BUS_ADDRESS /proc/${pid}/environ | sed 's/DBUS_SESSION_BUS_ADDRESS=//' )
 
-export DISPLAY=:0.0
+export DISPLAY=:0
 export XAUTHORITY=/home/${uname}/.Xauthority
 export DBUS_SESSION_BUS_ADDRESS=$dbus
 
@@ -59,10 +59,10 @@ fi
 SPEECH_TEXT=`echo ${BODY} | sed -e "s/0\([0-9]\)/\1/g" -e "s/:/,/"`
 if [ ${engine} = 'festival' ]
 then
-	echo ${SPEECH_TEXT} | /usr/bin/festival --tts
+	echo ${SPEECH_TEXT} | sudo -u ${uname} /usr/bin/festival --tts
 else
 	TTS_URL=`echo "http://translate.google.com/translate_tts?tl=en&q=${SPEECH_TEXT}" | sed -e "s/ /+/g"`
 	wget ${TTS_URL} -q -U Mozilla -O /tmp/_time_notify_tmp.mp3
-	/usr/bin/mpg123 /tmp/_time_notify_tmp.mp3 > /dev/null
+	sudo -u ${uname} /usr/bin/mpg123 /tmp/_time_notify_tmp.mp3
 fi
 
